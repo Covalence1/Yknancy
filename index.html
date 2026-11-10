@@ -1311,9 +1311,9 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
             <div><span>🔋 精力</span><span>70</span></div>
             <div><span>🧠 理智</span><span>70</span></div>
             <div><span>👔 老板满意度</span><span>60</span></div>
-            <div><span>⚖️ 账平度</span><span>30 / 100</span></div>
+            <div><span>⚖️ 账平度</span><span>10 / 100</span></div>
           </div>
-          <p class="x-howto">玩法：每天一张主线开场、两件破事、一张主线收尾，点选项应对，有些选择第 5 天会回来找你。把账平度做到 100，别让精力、理智或老板满意度归零。</p>
+          <p class="x-howto">玩法：每天一张主线开场、一件破事、一张主线收尾，点选项应对，有些选择第 5 天会回来找你。把账平度做到 100，别让精力、理智或老板满意度归零。</p>
           <button class="x-btn" id="btn-start" type="button">开始结账</button>
         </section>
 
@@ -1825,7 +1825,7 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
           { k: "b", icon: "👔", name: "老板满意度" },
           { k: "z", icon: "⚖️", name: "账平度", goal: true }
         ];
-        var START = { e: 70, s: 70, b: 60, z: 30 };
+        var START = { e: 70, s: 70, b: 60, z: 10 }, Z_GAIN = 0.6;
         var PER_DAY = 3, DAYS = 5; // 每天：主线开场 + 1 张日常 + 主线收尾
 
         var ENDINGS = {
@@ -2136,6 +2136,13 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
             Object.keys(out.d).forEach(function (k) { d2[k] = out.d[k]; });
             d2.s = (d2.s || 0) - SELF_HIT;
             out = { d: d2, r: out.r + "沈天衡冷笑着揭短，你的理智额外 -" + SELF_HIT + "。" };
+          }
+          // 难度：非决战卡的账平进度增长打六折
+          if (!ev.boss && out.d.z > 0) {
+            var d3 = {};
+            Object.keys(out.d).forEach(function (k) { d3[k] = out.d[k]; });
+            d3.z = Math.max(1, Math.round(d3.z * Z_GAIN));
+            out = { d: d3, r: out.r };
           }
           if (c.f.set) Object.keys(c.f.set).forEach(function (k) { st.flags[k] = c.f.set[k]; });
           if (ev.main) st.log.push({ day: ev.day, kind: ev.kind, l: c.l, boss: ev.boss, ally: !!c.f.ally, self: !!c.f.self });
