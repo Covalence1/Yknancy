@@ -4,9 +4,6 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>月末结账生存战</title>
-    
-    
-    
     <style>/* Hark's design tokens and component styles. Each component's rules follow its @component comment. style-gates: data */
 
 /* @component foundations */
@@ -1033,15 +1030,28 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
         background: color-mix(in srgb, var(--x-paper) 94%, transparent);
         backdrop-filter: blur(6px);
         -webkit-backdrop-filter: blur(6px);
-        padding: 24px;
-        cursor: pointer;
+        padding: 20px max(16px, var(--gutter));
+        overflow-y: auto;
         animation: x-fade 260ms ease-out;
       }
       .x-overlay[hidden] { display: none; }
       @keyframes x-fade { from { opacity: 0; } }
-      .x-overlay__box { text-align: center; display: grid; gap: 10px; animation: x-rise 420ms var(--ease-out); }
+      .x-overlay__box { width: 100%; max-width: 400px; text-align: center; display: grid; gap: 10px; animation: x-rise 420ms var(--ease-out); }
       .x-overlay__box p { margin: 0; }
-      .x-overlay__day { font: 900 64px/1 var(--x-serif); }
+      .x-overlay__day { font: 900 48px/1 var(--x-serif); }
+      .x-cut { text-align: left; margin: 8px 5px 5px 0; }
+      .x-cut__title { margin: 0; font: 900 24px/1.25 var(--x-serif); color: var(--x-red); overflow-wrap: anywhere; }
+      .x-cut .x-card__text { font-size: 18px; }
+      .x-lore {
+        margin: 0;
+        padding: 12px 14px;
+        border-left: 3px solid var(--x-red);
+        background: var(--x-sheet);
+        border-radius: 0 var(--r-s) var(--r-s) 0;
+        font: var(--weight-medium) 16px/1.65 var(--x-zh);
+        color: var(--x-ink);
+      }
+      .x-sub q { quotes: "「" "」"; color: var(--x-red); font-weight: var(--weight-bold); }
       .x-overlay__left { font: var(--weight-medium) 18px/1.4 var(--x-zh); }
       .x-overlay__left b { font-family: var(--x-mono); color: var(--x-red); font-size: 26px; font-weight: var(--weight-medium); }
       .x-overlay__rest { font: var(--size-small)/1.4 var(--x-zh); color: var(--x-ink-2); }
@@ -1109,13 +1119,181 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
       }
       .x-toast.is-on { opacity: 1; transform: translateX(-50%) translateY(-6px); }
 
+      /* ---------- badges ---------- */
+      .x-badgewrap { display: grid; gap: 10px; justify-items: center; }
+      .x-badgewrap[hidden] { display: none; }
+      .x-badgewrap .x-kicker { text-align: center; }
+      .x-badges { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 12px; margin: 0; padding: 0; list-style: none; max-width: 100%; }
+      .x-badges li {
+        max-width: 100%;
+        padding: 6px 10px;
+        border: 2px solid var(--x-red);
+        border-radius: 6px;
+        outline: 1px solid var(--x-red);
+        outline-offset: -5px;
+        color: var(--x-red);
+        font: 900 15px/1.3 var(--x-serif);
+        letter-spacing: 0.04em;
+        overflow-wrap: anywhere;
+        transform: rotate(-3deg);
+      }
+      .x-badges li:nth-child(even) { transform: rotate(2.5deg); }
+      .x-stamp__name, .x-end__title { overflow-wrap: anywhere; }
+      .x-stamp { max-width: calc(100vw - 2 * var(--gutter)); }
+
+      /* ---------- choice effects ---------- */
+      :root {
+        --x-gold: light-dark(#9a6b06, #e8bb4f);
+        --x-gold-wash: light-dark(#c8901455, #e8bb4f55);
+        --x-dim: light-dark(#2a251d33, #00000066);
+      }
+      .x-fx { position: fixed; inset: 0; z-index: 15; pointer-events: none; overflow: hidden; }
+      .x-fx > * { position: absolute; pointer-events: none; will-change: transform, opacity; }
+      .x-fx-dim { inset: 0; background: var(--x-dim); opacity: 0; animation: x-dim 900ms ease-out forwards; }
+      @keyframes x-dim { 30% { opacity: 1; } 100% { opacity: 0; } }
+      .x-fx-p { font-size: 22px; line-height: 1; opacity: 0; animation: x-p 1000ms var(--ease-out) forwards; }
+      @keyframes x-p {
+        0% { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+        20% { opacity: 1; }
+        100% { opacity: 0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.1); }
+      }
+      .x-fx-drift { font-size: 34px; line-height: 1; animation: x-drift 1100ms ease-in-out forwards; }
+      @keyframes x-drift {
+        0% { opacity: 0; transform: translate(-40px, -50%); }
+        20% { opacity: 1; }
+        80% { opacity: 1; }
+        100% { opacity: 0; transform: translate(var(--dx), calc(-50% - 18px)); }
+      }
+      .x-fx-pop { font: 900 34px/1 var(--x-serif); color: var(--x-red); letter-spacing: 0.04em; animation: x-pop 900ms cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+      @keyframes x-pop {
+        0% { opacity: 0; transform: translate(-50%, -50%) scale(0.2) rotate(-8deg); }
+        30% { opacity: 1; transform: translate(-50%, -50%) scale(1.15) rotate(4deg); }
+        45% { transform: translate(-50%, -50%) scale(1) rotate(-2deg); }
+        80% { opacity: 1; }
+        100% { opacity: 0; transform: translate(-50%, -70%) scale(1); }
+      }
+      .x-fx-seal {
+        padding: 4px 12px;
+        border: 3px solid var(--x-red);
+        border-radius: 8px;
+        outline: 1.5px solid var(--x-red);
+        outline-offset: -7px;
+        color: var(--x-red);
+        background: color-mix(in srgb, var(--x-sheet) 60%, transparent);
+        font: 900 28px/1.3 var(--x-serif);
+        letter-spacing: 0.2em;
+        padding-left: calc(12px + 0.2em);
+        animation: x-seal 1100ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+      @keyframes x-seal {
+        0% { opacity: 0; transform: rotate(-24deg) scale(2.4); }
+        22% { opacity: 1; transform: rotate(-12deg) scale(0.92); }
+        32% { transform: rotate(-14deg) scale(1); }
+        78% { opacity: 1; }
+        100% { opacity: 0; transform: rotate(-14deg) scale(1); }
+      }
+      .x-fx-gold {
+        left: 0;
+        padding: 8px 20px;
+        border-radius: var(--r-pill);
+        background: var(--x-gold);
+        color: var(--x-sheet);
+        font: 900 17px/1.2 var(--x-serif);
+        letter-spacing: 0.08em;
+        white-space: nowrap;
+        box-shadow: 0 0 18px var(--x-gold-wash);
+        animation: x-gold 1100ms cubic-bezier(0.5, 0, 0.5, 1) forwards;
+      }
+      @keyframes x-gold {
+        0% { transform: translateX(-100%); }
+        35% { transform: translateX(calc(50vw - 50%)); }
+        65% { transform: translateX(calc(50vw - 50%)); }
+        100% { transform: translateX(100vw); }
+      }
+      .x-fx-cent { font: 500 46px/1 var(--x-mono); color: var(--x-red); white-space: nowrap; transform: translate(-50%, -50%); animation: x-cent 1100ms var(--ease-out) forwards; }
+      .x-fx-cent span { display: inline-block; animation: x-shard 1100ms cubic-bezier(0.5, 0, 0.75, 0) forwards; }
+      @keyframes x-cent {
+        0% { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+        35% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); }
+        50% { transform: translate(-50%, -50%) scale(1.4) rotate(-2deg); }
+        100% { opacity: 1; transform: translate(-50%, -50%) scale(1.4); }
+      }
+      @keyframes x-shard {
+        0%, 52% { opacity: 1; transform: none; }
+        100% { opacity: 0; transform: translate(var(--dx), var(--dy)) rotate(var(--rot)); }
+      }
+      .x-shake { animation: x-shake 480ms ease-in-out; }
+      @keyframes x-shake {
+        15%, 55% { transform: translateX(-4px) rotate(-0.4deg); }
+        35%, 75% { transform: translateX(4px) rotate(0.4deg); }
+        90% { transform: translateX(-1px); }
+      }
+      .x-meter.x-jolt { animation: x-jolt 420ms ease-in-out; }
+      @keyframes x-jolt { 20%, 60% { transform: translateX(-3px); } 40%, 80% { transform: translateX(3px); } }
+      .x-meter.x-flash-up .x-meter__track { animation: x-flash-up 900ms ease-out; }
+      .x-meter.x-flash-down .x-meter__track { animation: x-flash-down 900ms ease-out; }
+      .x-meter.x-flash-gold .x-meter__track { animation: x-flash-gold 1100ms ease-out; }
+      .x-meter.x-flash-up .x-meter__val { color: var(--x-green); }
+      .x-meter.x-flash-down .x-meter__val { color: var(--x-red); }
+      .x-meter.x-flash-gold .x-meter__val { color: var(--x-gold); }
+      @keyframes x-flash-up { 25% { background: color-mix(in srgb, var(--x-green) 40%, transparent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--x-green) 30%, transparent); } }
+      @keyframes x-flash-down { 25% { background: color-mix(in srgb, var(--x-red) 40%, transparent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--x-red) 30%, transparent); } }
+      @keyframes x-flash-gold { 30%, 60% { background: var(--x-gold-wash); box-shadow: 0 0 10px 3px var(--x-gold-wash); } }
+
+      /* ---------- story cards ---------- */
+      .x-card__meta { flex-wrap: wrap; row-gap: 4px; }
+      .x-tag {
+        display: inline-block;
+        margin-right: 8px;
+        padding: 1px 6px;
+        border: 1.5px solid var(--x-red);
+        border-radius: 4px;
+        color: var(--x-red);
+        font: var(--weight-bold) var(--size-caption)/1.4 var(--x-zh);
+        letter-spacing: 0.04em;
+        vertical-align: 1px;
+        white-space: nowrap;
+      }
+
+      /* ---------- 这笔账不对！ ---------- */
+      .x-big { position: fixed; inset: 0; z-index: 25; display: grid; place-items: center; pointer-events: none; overflow: hidden; }
+      .x-big[hidden] { display: none; }
+      .x-big__seal {
+        pointer-events: none;
+        max-width: calc(100vw - 24px);
+        padding: 6px 14px;
+        border: 5px solid var(--x-red);
+        border-radius: 12px;
+        outline: 2px solid var(--x-red);
+        outline-offset: -11px;
+        background: color-mix(in srgb, var(--x-sheet) 72%, transparent);
+        color: var(--x-red);
+        font: 900 clamp(38px, 12vw, 72px)/1.2 var(--x-serif);
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+        transform: rotate(-8deg);
+        animation: x-slam 1100ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      }
+      @keyframes x-slam {
+        0% { opacity: 0; transform: rotate(-20deg) scale(2.6); }
+        18% { opacity: 1; transform: rotate(-7deg) scale(0.9); }
+        28% { transform: rotate(-9deg) scale(1.03); }
+        36% { transform: rotate(-8deg) scale(1); }
+        80% { opacity: 1; }
+        100% { opacity: 0; transform: rotate(-8deg) scale(1); }
+      }
+
       @media (min-width: 700px) {
         .x-app { padding-top: 24px; }
       }
       @media (prefers-reduced-motion: reduce) {
         .x-card, .x-result, .x-stamp, .x-overlay, .x-overlay__box, .x-float, .x-meter.is-low .x-meter__track { animation: none !important; }
+        .x-fx, .x-shake, .x-meter.x-jolt { animation: none !important; }
+        .x-fx { display: none; }
         .x-stamp { transform: rotate(-12deg); }
         .x-meter__fill { transition: none; }
+        .x-big__seal { animation: x-bigfade 1600ms linear forwards; transform: rotate(-8deg); }
+        @keyframes x-bigfade { 0%, 65% { opacity: 1; } 100% { opacity: 0; } }
       }
     </style>
   </head>
@@ -1126,6 +1304,8 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
         <section class="x-screen x-start" id="scr-start">
           <p class="x-kicker">记账凭证 · 本月第 31 天</p>
           <h1 class="x-title">月末<em>结账</em><br />生存战</h1>
+          <p class="x-sub">你是林小满，26 岁，深圳小公司会计，口头禅<q>这笔账不对！</q></p>
+          <p class="x-lore">月底了。林小满发现，假账在她眼里会发光、冒烟，还会开口求饶——而她头顶，多了四条状态栏。</p>
           <p class="x-sub">距离申报截止还有 <b>5</b> 天。<br />借贷必相等，你我未必。</p>
           <div class="x-ledger" aria-label="初始状态">
             <div><span>🔋 精力</span><span>70</span></div>
@@ -1133,7 +1313,7 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
             <div><span>👔 老板满意度</span><span>60</span></div>
             <div><span>⚖️ 账平度</span><span>30 / 100</span></div>
           </div>
-          <p class="x-howto">玩法：每天 3 件破事，点选项应对。把账平度做到 100，别让精力、理智或老板满意度归零。</p>
+          <p class="x-howto">玩法：每天一张主线开场、两件破事、一张主线收尾，点选项应对，有些选择第 5 天会回来找你。把账平度做到 100，别让精力、理智或老板满意度归零。</p>
           <button class="x-btn" id="btn-start" type="button">开始结账</button>
         </section>
 
@@ -1162,6 +1342,11 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
           </div>
           <h2 class="x-end__title" id="end-title"></h2>
           <p class="x-end__desc" id="end-desc"></p>
+          <p class="x-statline" id="end-quote"></p>
+          <div class="x-badgewrap" id="badgewrap" hidden>
+            <p class="x-kicker">另获徽章</p>
+            <ul class="x-badges" id="badges"></ul>
+          </div>
           <div class="x-final" id="final"></div>
           <p class="x-statline" id="statline"></p>
           <div class="x-actions">
@@ -1172,13 +1357,21 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
       </main>
     </div>
 
-    <div class="x-overlay" id="overlay" hidden role="dialog" aria-live="polite">
+    <div class="x-overlay" id="overlay" hidden role="dialog" aria-modal="true" aria-labelledby="ov-title">
       <div class="x-overlay__box">
         <p class="x-overlay__day" id="ov-day">第 1 天</p>
         <p class="x-overlay__left" id="ov-left"></p>
         <p class="x-overlay__rest" id="ov-rest"></p>
+        <article class="x-card x-cut">
+          <div class="x-card__meta"><span class="x-card__who">过场 · 林小满</span><span id="ov-no">第 1 章</span></div>
+          <h2 class="x-cut__title" id="ov-title"></h2>
+          <p class="x-card__text" id="ov-text"></p>
+          <button class="x-btn" id="ov-go" type="button">继续</button>
+        </article>
       </div>
     </div>
+    <div class="x-fx" id="fx" aria-hidden="true"></div>
+    <div class="x-big" id="bigfx" aria-hidden="true" hidden></div>
     <div class="x-toast" id="toast" role="status">已复制</div>
 
     <script>/* Page behaviors for Hark's component library: the nav, the theme toggle, tables, line charts and images. style-gates: data */
@@ -1367,7 +1560,8 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
     <script>
       (function () {
         "use strict";
-        // d: e 精力, s 理智, b 老板满意度, z 账平度 · f: tea 奶茶, ot 加班 · alt: 随机结果
+        // d: e 精力, s 理智, b 老板满意度, z 账平度 · f: tea 奶茶, ot 加班, rej 退回类, aud 正面处理审计 · alt: 随机结果
+        // 事件标签：cent 差 0.01 元类（特效），aud 审计相关事件
         function C(l, d, r, f, alt) { return { l: l, d: d, r: r, f: f || {}, alt: alt }; }
 
         var POOL = [
@@ -1376,13 +1570,13 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
             C("明早再说，今天的我已下线", { e: 5, s: 5, b: -5 }, "你关上电脑。流水躺在邮箱里，像一封来自地狱的情书。"),
             C("让出纳先勾一遍，我负责精神支持", { s: 3, z: 6, b: -3 }, "出纳用三种颜色的荧光笔勾完了，没有图例。这是一种行为艺术。")
           ] },
-          { w: "来自：银行对账单", t: "银行对账，差 0.01 元。不多不少，刚好够毁掉你的一天。", c: [
+          { w: "来自：银行对账单", cent: true, t: "银行对账，差 0.01 元。不多不少，刚好够毁掉你的一天。", c: [
             C("翻遍三个月流水找它", { e: -15, s: -8, z: 12 }, "你翻遍三个月流水，终于找到了那 0.01。它在你心里。"),
             C("记入营业外收支", { s: 5, z: 6 }, "0.01 被你优雅地放逐到了营业外。它会回来的。"),
             C("把 0.01 元自己掏了", { e: 5, s: -5 }, "你掏出一枚一分硬币，郑重地放在键盘上。系统不收现金。")
           ] },
           { w: "来自：销售", t: "销售交来一沓餐饮发票，发票抬头：个人。个人是谁？个人吃得很开心。", c: [
-            C("退回重开", { s: 3, b: -5, z: 6 }, "销售说饭店已经倒闭了。你说那是另一个问题，他说那是你的问题。"),
+            C("退回重开", { s: 3, b: -5, z: 6 }, "销售说饭店已经倒闭了。你说那是另一个问题，他说那是你的问题。", { rej: 1 }),
             C("先收着，放抽屉里养蛊", { s: 3, z: -5 }, "那沓发票在抽屉里积累怨气，隐约产生了自我意识。"),
             C("对着发票吹一口仙气", { e: 3, s: -5 }, "仙气吹完，抬头还是个人。我真的会谢。")
           ] },
@@ -1392,10 +1586,10 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
             C("把上次的改个日期，赌老板不看", { s: 5, b: -15 }, "老板一眼看出来了：「你当我不看数？」你当了。", null,
               { p: 0.4, d: { s: 8, b: 5 }, r: "老板说：「很好。」你决定把这个秘密带进退休。" })
           ] },
-          { w: "来自：审计", t: "审计要同一套数据，换成第三种格式。理由：「上一个格式不太对味。」", c: [
-            C("老老实实再导一遍", { e: -10, b: 5, z: 4 }, "第三种格式和第一种只差一个空格。你盯着空格，空格也盯着你。"),
-            C("甩个底表，让他自己透视", { s: 5, b: -5 }, "审计回复：「我们只要 PDF。」已读乱回的最高境界。"),
-            C("把前两种格式缝合一下", { s: -5, z: 2 }, "审计说可以。然后要了第四种。审计换格式，遥遥领先。")
+          { w: "来自：审计", aud: true, t: "审计要同一套数据，换成第三种格式。理由：「上一个格式不太对味。」", c: [
+            C("老老实实再导一遍", { e: -10, b: 5, z: 4 }, "第三种格式和第一种只差一个空格。你盯着空格，空格也盯着你。", { aud: 1 }),
+            C("甩个底表，让他自己透视", { s: 5, b: -5 }, "审计回复：「我们只要 PDF。」已读乱回的最高境界。", { rej: 1 }),
+            C("把前两种格式缝合一下", { s: -5, z: 2 }, "审计说可以。然后要了第四种。审计换格式，遥遥领先。", { aud: 1 })
           ] },
           { w: "来自：财务软件", t: "财务软件弹窗：「凭证号断号。」有人在你的账里表演了一场消失术。", c: [
             C("逐张翻查，化身凭证侦探", { e: -10, z: 8 }, "原来有人建了凭证又删了。没留下名字，只留下了你。"),
@@ -1419,7 +1613,7 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
           ] },
           { w: "来电：未知号码", t: "午休被电话吵醒：「发票能不能开？」你梦里刚把账做平。", c: [
             C("爬起来开", { e: -8, b: 5, z: 2 }, "开完发票，午休结束了。梦里平的账，醒来没平。"),
-            C("「下午上班再说」", { e: 5, b: -3 }, "对方说「就一张」。世上没有就一张，只有一张又一张。"),
+            C("「下午上班再说」", { e: 5, b: -3 }, "对方说「就一张」。世上没有就一张，只有一张又一张。", { rej: 1 }),
             C("假装自己在隧道里", { s: 5, b: -2 }, "「喂？喂？……隧道……」你人在工位，演得自己都信了。")
           ] },
           { w: "来自：电子税务局", t: "税局系统排队中，前面还有 386 人。你是第 387 个命苦的人。", c: [
@@ -1430,8 +1624,8 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
           ] },
           { w: "来自：业务部门", t: "业务部门月底突然补交 20 张单据，附言：「不急，今天弄完就行。」", c: [
             C("全收下，连夜录", { e: -18, z: 12 }, "录完最后一张，窗外天亮了。你和太阳打了个照面，彼此都很疲惫。", { ot: 1 }),
-            C("只收手续齐全的", { s: 2, b: -3, z: 6 }, "退回 7 张。他们说你「太死板」，你把它当成年度最佳评价。"),
-            C("让他们下个月再来，并送上祝福", { s: 5, b: -8 }, "业务部门找了老板，老板找了你。闭环了，闭的是你。")
+            C("只收手续齐全的", { s: 2, b: -3, z: 6 }, "退回 7 张。他们说你「太死板」，你把它当成年度最佳评价。", { rej: 1 }),
+            C("让他们下个月再来，并送上祝福", { s: 5, b: -8 }, "业务部门找了老板，老板找了你。闭环了，闭的是你。", { rej: 1 })
           ] },
           { w: "来自：老板", t: "老板问：「为什么赚了钱，银行里却没钱？」这个问题困扰人类已久。", c: [
             C("从权责发生制讲起", { e: -5, s: -5, b: 8 }, "讲到应收账款，老板说「懂了」。他没懂。你也知道他没懂。"),
@@ -1494,7 +1688,7 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
             C("转给出纳的出纳", { s: 5, b: -2 }, "出纳又转回给你。电话转了一圈回到原点，完美闭环。")
           ] },
           { w: "来自：老板", t: "老板：「这笔费用，能不能想办法换个科目？」你听见准则在哭。", c: [
-            C("讲清楚为什么不行", { s: 8, b: -5, z: 3 }, "你说出「不合规」三个字时，背后有光，耳边有 BGM。"),
+            C("讲清楚为什么不行", { s: 8, b: -5, z: 3 }, "你说出「不合规」三个字时，背后有光，耳边有 BGM。", { rej: 1 }),
             C("翻政策找合规做法", { e: -10, b: 8, z: 4 }, "找到了合规又好看的科目。老板直呼专业，你直呼命苦。"),
             C("装没听懂，开启已读乱回模式", { s: 3, b: -3 }, "老板又说了一遍。你又没听懂。双方僵持，谁先眨眼谁输。")
           ] },
@@ -1528,9 +1722,9 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
             C("转发，配字「真实」", { e: 3, s: 10 }, "二十个人回了「+1」，没有一个人在对账。团结就是力量。"),
             C("默默保存，设为头像", { s: 5 }, "你的表情包收藏夹又厚了一点，已经比底稿还厚。")
           ] },
-          { w: "来自：财务经理", t: "下班前，经理轻描淡写：「明天审计来现场。」", c: [
-            C("今晚把底稿整理好", { e: -15, b: 5, z: 8 }, "底稿整整齐齐，像你从未拥有过的生活。", { ot: 1 }),
-            C("明天早点来", { e: -5, z: 4 }, "你七点半到，审计七点四十到。你赢了十分钟，输了一整天。"),
+          { w: "来自：财务经理", aud: true, t: "下班前，经理轻描淡写：「明天审计来现场。」", c: [
+            C("今晚把底稿整理好", { e: -15, b: 5, z: 8 }, "底稿整整齐齐，像你从未拥有过的生活。", { ot: 1, aud: 1 }),
+            C("明天早点来", { e: -5, z: 4 }, "你七点半到，审计七点四十到。你赢了十分钟，输了一整天。", { aud: 1 }),
             C("对着电脑烧香，祈祷审计堵车", { s: 5, b: -5 }, "审计没堵车，还提前到了。香火不旺，命苦。")
           ] },
           { w: "来自：外卖", t: "外卖到了，你正在录凭证。麻辣烫和凭证，只能先宠幸一个。", c: [
@@ -1551,15 +1745,79 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
           ] }
         ];
 
-        var BOSS = { w: "申报截止日", boss: true, t: "最后一天。申报系统还开着，你的鼠标悬在「申报」按钮上，像悬在命运的扳机上。", c: [
-          { l: "直接点申报，命运交给玄学", f: {}, fn: function (m) {
-            return m.z >= 80
-              ? { d: { s: 10, z: 15 }, r: "申报成功！回执弹出的那一刻，你哭了，Excel 好像也哭了。" }
-              : { d: { s: -20, z: 5 }, r: "系统提示：报表不平衡。你闭上眼睛，听见了 0.01 的笑声。" };
-          } },
-          C("最后再核一遍（第 47 遍）", { e: -20, z: 18 }, "核完最后一遍，离截止还剩 3 分钟。点击。成功。心率遥遥领先。", { ot: 1 }),
-          C("先让老板过目，把锅分一半", { s: -5, b: 12, z: 6 }, "老板看了三秒：「报吧。」这三秒，你过完了一生。")
-        ] };
+        // 主线卡：5 天 × 开场 + 收尾 = 10 张，每局固定按顺序出现，中间夹日常卡
+        // f.set 写入剧情标记 st.flags：gu（第 2 天 help/diss）、ayi（第 3 天 yes/no）、self（第 4 天是否改自己的账）
+        // hook：收尾卡给次日埋的钩子 · build：按标记临时生成台词和选项（第 5 天对决）
+        function M(day, kind, w, t, c, o) {
+          o = o || {};
+          return { main: true, day: day, kind: kind, w: w, t: t, c: c, aud: !!o.aud, boss: !!o.boss, hook: o.hook, build: o.build };
+        }
+        var MAIN = [
+          M(1, "开场", "老板钱多多", "入职第一天，老板钱多多甩来一叠报销单：「直接付了，别磨叽。」最上面那张 2480 元的发票，正在冒烟。", [
+            C("逐张核附件", { e: -10, z: 10 }, "核到第七张，冒烟那张的附件是一张奶茶小票。烟灭了，你的入职热情也灭了一半。"),
+            C("直接付了，入职第一天要合群", { b: 10, z: -12 }, "钱多多满意地走了。那缕烟飘进了其他应付款，在那里安了家。"),
+            C("先问这烟算不算消防隐患", { s: 5, b: -5, z: 3 }, "行政说烟不归他们管，归你。入职第一天，你就有了自己的辖区。")
+          ]),
+          M(1, "收尾", "一张假发票", "下班前，冒烟的那张发票突然开口求饶：「姐姐别看我！我上有老下有小，全是复印件！」", [
+            C("拆穿并退回", { b: -5, z: 18 }, "税号少一位、金额改过、章是 P 的。三宗罪，退回，不送。", { rej: 1, wrong: 1 }),
+            C("假装没看见", { b: 5, s: -15 }, "发票松了口气，你没有。它在凭证袋里小声说谢谢，说了一整晚。")
+          ], { hook: "发票临走前哭着招了：「开我的是天衡商贸……它们欠的不止 2480，是一百万……」" }),
+
+          M(2, "开场", "审计师顾衡", "审计师顾衡登场，红笔一圈：「摘要写『购买办工用品』。办工？贵司办的是什么工？」", [
+            C("改掉错别字，顺手帮他理底稿", { e: -12, z: 10 }, "你改了字，又把底稿按索引码好。顾衡翻了两页：「嗯。」据说这是他三年来最长的一句夸奖。", { aud: 1, set: { gu: "help" } }),
+            C("怼回去：「您审账还是批语文作业？」", { s: 10, b: -8 }, "顾衡推了推眼镜：「都批。」他在本子上记了一笔。记的不是账，是你。", { set: { gu: "diss" } })
+          ], { aud: true }),
+          M(2, "收尾", "退回的询证函", "寄给天衡商贸的询证函被退回了。注册地址是一家包子铺，退件理由：查无此人，有包子。", [
+            C("亲自去包子铺蹲点", { e: -10, z: 10 }, "老板说常有人来取「天衡」的信，从不买包子。可疑度拉满，肉包也拉满。"),
+            C("先放着，和个人抬头发票做邻居", { s: 5, z: -3 }, "抽屉里的怨气又厚了一层。它们开始商量选个组长。")
+          ], { hook: "包子铺老板塞来一张蒸笼纸：「想查天衡，去账城。」背面印着：本店不负责剧情。" }),
+
+          M(3, "开场", "账城 · 守账人", "账城到了。墙上贴着一张打印纸：「守账人规则：一、不许改自己的账；二、改一笔，扣一份代价，概不赊账；三、账改得了数字，改不了人……」第三条被一圈咖啡渍盖住了一半。", [
+            C("认真抄下来", { s: 6, z: 3 }, "你抄到「人」就断了。旁边有人用铅笔补了个「民币」，又被划掉了。"),
+            C("用指甲抠咖啡渍", { e: -3, s: -5 }, "抠下来一块，底下还是咖啡渍。这是一杯有深度的咖啡。"),
+            C("拍照发群里：谁喝的？", { s: 3, b: -3 }, "群里一片寂静。半小时后，有人默默把头像换成了一杯咖啡。")
+          ]),
+          M(3, "收尾", "保洁阿姨", "深夜，你正打算顺手改一笔错账。保洁阿姨拖地路过，拖把一顿：「借方在左，孩子。」地上拖出一个工整的「平」字。", [
+            C("听阿姨的，借贷摆正走红字", { e: -6, s: 10, z: 8 }, "借方挪回左边，账自己平了。回头一看，阿姨推着水桶走了，没有脚步声。", { set: { ayi: "yes" } }),
+            C("「阿姨，我是专业的。」", { s: -8, z: 5 }, "阿姨点点头：「专业的都这么说。」拖把一转，那个「平」字被拖没了。", { set: { ayi: "no" } })
+          ], { hook: "阿姨走到门口回头：「明天审计和银行一起来。丫头，自己的账，别碰。」" }),
+
+          M(4, "开场", "审计战", "审计、税务、银行同时进场。审计翻出上月一笔错账，凭证右下角的制单人签名：林小满。", [
+            C("红字冲销，自己的锅自己认", { e: -10, b: -3, z: 8 }, "你当着审计的面红冲蓝补。丢人是丢人，但每一步都留痕可查。", { aud: 1, set: { self: false } }),
+            C("趁没人看，直接改了", { s: -5, z: 15 }, "数字乖乖变了，审计什么都没看出来。墙上那张打印纸，好像微微卷了一下边。", { self: 1, set: { self: true } })
+          ], { aud: true }),
+          M(4, "收尾", "资金链", "银行来电：公司账户被冻结，理由「疑似与天衡集团存在资金往来」。钱多多在走廊来回踱步，踱出了一条小路。", [
+            C("连夜整理流水自证清白", { e: -18, b: 10, z: 10 }, "流水装订成册，索引都编好了。银行翻了十分钟：「挺规范。」解冻了。", { ot: 1 }),
+            C("让钱多多自己去银行解释", { s: 5, b: -10, z: 3 }, "钱多多去了三小时，回来说银行要你去。闭环了，闭的是你。")
+          ], { hook: "凌晨来了条短信：「明晚八点，带上你的账。——沈天衡」号码归属地：办公用品。" }),
+
+          M(5, "开场", "董事长沈天衡", "沈天衡推门而入，袖扣是一借一贷。「林会计，我靠假账操纵物价、房价和人的运气。今晚，我来注销你。」", [
+            C("「访客请先登记。」", { s: 8, b: -3 }, "他愣了一下，签了。签名是一串数字，加起来正好平。这是挑衅。"),
+            C("默默打开试算平衡表", { e: -5, z: 6 }, "表格亮起的那一刻，他的笑容掉了一帧。")
+          ]),
+          M(5, "收尾", "终极对决 · 沈天衡", "", [], { boss: true, build: function (fl) {
+            var t = "沈天衡亮出终极杀招：把所有假发票的品名开成「办公用品」。一百万的办公用品，订书钉能绕地球三圈。";
+            if (fl.self) t += "他慢条斯理地揭短：「第 4 天，你改自己账的时候，可没这么讲原则。」";
+            if (fl.gu === "diss") t += "你瞥了眼门口，顾衡没来。第 2 天那句「批语文作业」，他记着呢。";
+            if (fl.ayi === "no") t += "楼道里的保洁间，灯黑着。";
+            var c = [
+              C("发函证，逐笔核对办公用品", { e: -15, z: 15 }, "回函一封封飞回来：没有一家收过订书钉。沈天衡的笑容第一次僵住了。"),
+              C("红字冲销他的虚增收入", { s: -10, b: -5, z: 18 }, "红字落下，虚增收入一行行熄灭。钱多多在门外小声问：「这……也是你的权限？」")
+            ];
+            if (fl.gu === "help") c.push(C("顾衡带着底稿闯进来", { s: 10, z: 28 }, "门被撞开，顾衡抱着一摞底稿：「你第 2 天理的索引，我连夜对完了。办公用品？他连办公室都是租的。」", { ally: 1 }));
+            if (fl.ayi === "yes") c.push(C("阿姨递来一把算盘", { e: 5, s: 12, z: 25 }, "阿姨把算盘往桌上一搁：「借方在左，孩子。」珠子噼啪一响，一百万办公用品当场现形——全是空气。", { ally: 1 }));
+            return { t: t, c: c };
+          } })
+        ];
+        var SELF_HIT = 15;
+
+        var STORY = [
+          { t: "入职风云", x: "入职第一天。报销单很厚，老板很急，有张发票在冒烟。" },
+          { t: "假账迷踪", x: "一百万对不上，线索指向「天衡商贸」。毒舌审计师顾衡，到岗了。" },
+          { t: "账城", x: "账城不在地图上，在包子铺的蒸笼纸上。这里有规矩，规矩贴在墙上。" },
+          { t: "账面决战", x: "审计、税务、资金链一起压过来。天衡集团，出手了。" },
+          { t: "新世界", x: "今晚八点，和沈天衡对账。账要算清，人要公平。" }
+        ];
 
         var METERS = [
           { k: "e", icon: "🔋", name: "精力" },
@@ -1568,17 +1826,41 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
           { k: "z", icon: "⚖️", name: "账平度", goal: true }
         ];
         var START = { e: 70, s: 70, b: 60, z: 30 };
-        var PER_DAY = 3, DAYS = 5;
+        var PER_DAY = 3, DAYS = 5; // 每天：主线开场 + 1 张日常 + 主线收尾
 
         var ENDINGS = {
-          god: { title: "借贷平衡之神·肉身成圣", desc: "账平了，人还在，理智也在。建议单位为你立碑，就立在打印机旁边。", top: "已审核" },
-          gone: { title: "账平了，人没了，工位还热着", desc: "报表完美平衡。你的灵魂已计入待处理财产损溢，等待领导审批。", top: "已审核" },
-          cent: { title: "0.01 永生", desc: "就差那 0.01。它不在流水里，不在凭证里，它将在你今晚的梦里永生。", top: "待复核" },
-          next: { title: "明年的事明年的我再说", desc: "账没平，申报截止了。明年的你打开这份报表，会想起今天的你，并原谅你。大概。", top: "已驳回" },
-          sleep: { title: "人在工位，魂在银行流水", desc: "精力归零。醒来时脸上印着凭证的格子，屏幕上多了一行 jjjjjjjjjjjj。", top: "已驳回" },
-          laugh: { title: "笑着笑着就把报表交了", desc: "理智归零。同事说你盯着资产负债表笑了二十分钟，还给 Excel 磕了个头。", top: "已驳回" },
-          talk: { title: "被约到会议室喝茶（字面意思）", desc: "老板满意度归零。「你来会议室一下。」茶是好茶，话不是好话。", top: "已驳回" }
+          deity: { title: "借贷平衡之神", desc: "「账要算清，人要公平。」天地总账金光大作，被借走的好运一笔笔归位。", top: "天地总账", r: 99 },
+          keeper: { title: "新世界的守账人", desc: "沈天衡的假账被一笔笔冲平，你的理智也还在。新世界的账本，从今天起由你来守。", top: "已审核", r: 78 },
+          erased: { title: "被天衡注销", desc: "你在人间的账户，被一笔假账注销了……", top: "已注销", r: 35 },
+          god: { title: "借贷平衡之神·肉身成圣", desc: "账平了，人还在，理智也在。建议单位为你立碑，就立在打印机旁边。", top: "已审核", r: 70 },
+          gone: { title: "账平了，人没了，工位还热着", desc: "报表完美平衡。你的灵魂已计入待处理财产损溢，等待领导审批。", top: "已审核", r: 45 },
+          cent: { title: "0.01 永生", desc: "就差那 0.01。它不在流水里，不在凭证里，它将在你今晚的梦里永生。", top: "待复核", r: 40 },
+          next: { title: "明年的事明年的我再说", desc: "账没平，申报截止了。明年的你打开这份报表，会想起今天的你，并原谅你。大概。", top: "已驳回", r: 20 },
+          sleep: { title: "人在工位，魂在银行流水", desc: "踩到香蕉皮滑倒，手机掉进马桶——捞起来那一刻，你还在算维修费。改一笔，扣一份代价，概不赊账。", top: "已驳回", r: 30 },
+          laugh: { title: "笑着笑着就把报表交了", desc: "被一只鸽子追了三条街，鸽子还会绕近路。改一笔，扣一份代价，概不赊账。", top: "已驳回", r: 30 },
+          talk: { title: "被约到会议室喝茶（字面意思）", desc: "老板满意度归零。「你来会议室一下。」茶是好茶，话不是好话。", top: "已驳回", r: 30 }
         };
+        // 统计称号：r 越大越稀有，多个满足时取最大的当主称号
+        var TITLES = [
+          { id: "audit", r: 95, title: "审计克星", desc: "账平度 100，每一次审计找上门都被你正面接住。审计走的时候，对你的底稿鞠了一躬。",
+            ok: function (m, s) { return m.z >= 100 && s.audSeen > 0 && s.audOk === s.audSeen; } },
+          { id: "tea", r: 92, title: "奶茶续命官", desc: "本期喝了 2 杯以上奶茶。你的血液成分：三分糖、去冰、借贷平衡。",
+            ok: function (m, s) { return s.tea >= 2; } },
+          { id: "rej", r: 88, title: "发票退回专业户", desc: "退回 3 次以上。全公司都知道了：交给你的单据，手续必须齐全。",
+            ok: function (m, s) { return s.rej >= 3; } },
+          { id: "otmax", r: 85, title: "人形加班机", desc: "加班 5 次以上。工位已认你为主，保洁阿姨以为你住这儿。",
+            ok: function (m, s) { return s.ot >= 5; } },
+          { id: "zen", r: 80, title: "佛系会计", desc: "四项数值全在 40 到 60 之间。不悲不喜，不平不乱，借贷随缘。",
+            ok: function (m) { return ["e", "s", "b", "z"].every(function (k) { return m[k] >= 40 && m[k] <= 60; }); } },
+          { id: "sweet", r: 75, title: "老板的小甜甜", desc: "老板满意度 90 以上。老板逢人就说：「我们财务，靠谱。」",
+            ok: function (m) { return m.b >= 90; } },
+          { id: "ontime", r: 72, title: "准点下班の勇者", desc: "一次班都没加，账平度还做到了 80 以上。传说中的六点整，被你走成了日常。",
+            ok: function (m, s) { return s.ot === 0 && m.z >= 80; } },
+          { id: "energy", r: 60, title: "精力管理大师", desc: "月末结束，精力还有 80 以上。同事怀疑你偷偷充了电。",
+            ok: function (m) { return m.e >= 80; } },
+          { id: "thorn", r: 55, title: "老板的眼中钉", desc: "老板满意度 20 以下，但你活到了最后。老板看你不顺眼，又离不开你。",
+            ok: function (m, s, alive) { return alive && m.b <= 20; } }
+        ];
 
         var $ = function (id) { return document.getElementById(id); };
         var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -1631,17 +1913,149 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
           setTimeout(function () { f.remove(); }, 1400);
         }
 
+        /* ---------- 选项特效 ---------- */
+        function pickFx(out, c, ev) {
+          var d = out.d, main = null, best = 0;
+          ["b", "s", "e", "z"].forEach(function (k) {
+            var v = d[k] || 0;
+            if (Math.abs(v) > best) { best = Math.abs(v); main = k; }
+          });
+          var v = main ? d[main] : 0;
+          if (c.f.self) return { t: "huh", k: "s", v: d.s || -1, txt: "违反规则一！" };
+          if (out.fx === "cent" || ev.cent) return { t: "cent", k: main, v: v };
+          if ((d.z || 0) >= 15) return { t: "gold", k: "z", v: d.z };
+          if (c.f.ot) return { t: "tired", k: "e", v: d.e || -1 };
+          if (!main) return null;
+          if (main === "b") return { t: "seal", k: "b", v: v };
+          if (v > 0) return { t: "heal", k: main, v: v, tea: !!c.f.tea };
+          if (main === "e") return { t: "tired", k: "e", v: v };
+          return { t: "huh", k: main, v: v };
+        }
+
+        function flashMeter(k, cls, jolt) {
+          var me = meterEls[k];
+          if (!me) return;
+          var el = me.el;
+          ["x-flash-up", "x-flash-down", "x-flash-gold", "x-jolt"].forEach(function (c) { el.classList.remove(c); });
+          void el.offsetWidth;
+          el.classList.add(cls);
+          if (jolt && !reduce) el.classList.add("x-jolt");
+          clearTimeout(el._fx);
+          el._fx = setTimeout(function () { el.classList.remove(cls, "x-jolt"); }, 1150);
+        }
+
+        function fxAdd(cls, html, x, y, vars) {
+          var n = document.createElement("div");
+          n.className = cls;
+          n.innerHTML = html;
+          if (x != null) n.style.left = x + "px";
+          if (y != null) n.style.top = y + "px";
+          if (vars) Object.keys(vars).forEach(function (k) { n.style.setProperty(k, vars[k]); });
+          $("fx").appendChild(n);
+          setTimeout(function () { n.remove(); }, 1250);
+          return n;
+        }
+        function pickOne(a) { return a[Math.floor(Math.random() * a.length)]; }
+
+        function playFx(fx) {
+          if (!fx) return;
+          var col = fx.v > 0 ? "x-flash-up" : "x-flash-down";
+          if (fx.t === "gold") flashMeter("z", "x-flash-gold");
+          else if (fx.k) flashMeter(fx.k, col, fx.t === "tired");
+          if (reduce) return;
+
+          var text = document.querySelector(".x-card__text");
+          var tr = text ? text.getBoundingClientRect() : { left: 16, top: 160, width: 300, height: 90 };
+          var vw = window.innerWidth;
+          var cx = tr.left + tr.width / 2, cy = Math.max(tr.top + tr.height / 2, 120);
+
+          if (fx.t === "heal") {
+            var mr = meterEls[fx.k].track.getBoundingClientRect();
+            var set = fx.tea ? ["🧋", "🧋", "✨"] : fx.k === "z" ? ["💰", "✨", "💰"] : ["✨", "🧋", "💰"];
+            for (var i = 0; i < 7; i++) {
+              fxAdd("x-fx-p", pickOne(set), mr.left + Math.random() * mr.width, mr.top + 4, {
+                "--dx": Math.round(Math.random() * 60 - 30) + "px",
+                "--dy": Math.round(18 + Math.random() * 46) + "px",
+                "animation-delay": Math.round(i * 40) + "ms"
+              });
+            }
+          } else if (fx.t === "tired") {
+            fxAdd("x-fx-dim", "");
+            fxAdd("x-fx-drift", pickOne(["😮‍💨", "☕"]), tr.left, cy, { "--dx": Math.round(tr.width) + "px" });
+          } else if (fx.t === "huh") {
+            var st2 = $("stage");
+            st2.classList.remove("x-shake"); void st2.offsetWidth; st2.classList.add("x-shake");
+            setTimeout(function () { st2.classList.remove("x-shake"); }, 500);
+            fxAdd("x-fx-pop", fx.txt || pickOne(["？？？", "🤯"]), Math.min(Math.max(cx, 110), vw - 110), cy);
+          } else if (fx.t === "seal") {
+            var s = fxAdd("x-fx-seal", fx.v > 0 ? "已阅" : "打回", null, null);
+            var w = s.offsetWidth, h = s.offsetHeight;
+            s.style.left = Math.min(vw - w - 12, tr.left + tr.width - w) + "px";
+            s.style.top = Math.max(tr.top, cy - h / 2) + "px";
+          } else if (fx.t === "gold") {
+            var hr = document.querySelector(".x-hud").getBoundingClientRect();
+            fxAdd("x-fx-gold", "借贷平衡 ✓", null, Math.max(0, hr.bottom + 6));
+          } else if (fx.t === "cent") {
+            var chars = "¥0.01".split("").map(function (ch) {
+              var a = Math.random() * Math.PI * 2, r = 50 + Math.random() * 60;
+              return '<span style="--dx:' + Math.round(Math.cos(a) * r) + "px;--dy:" + Math.round(Math.sin(a) * r + 30) +
+                "px;--rot:" + Math.round(Math.random() * 120 - 60) + 'deg">' + ch + "</span>";
+            }).join("");
+            fxAdd("x-fx-cent", chars, Math.min(Math.max(cx, 90), vw - 90), cy);
+          }
+        }
+
         function newGame() {
           st = {
             m: { e: START.e, s: START.s, b: START.b, z: START.z },
-            deck: shuffle(POOL).slice(0, PER_DAY * DAYS - 1).concat([BOSS]),
+            deck: buildDeck(),
             i: 0,
-            stats: { rec: 0, tea: 0, ot: 0 }
+            stats: { rec: 0, tea: 0, ot: 0, rej: 0, audSeen: 0, audOk: 0, self: 0, wrong: false },
+            flags: { gu: null, ayi: null, self: false },
+            log: [],
+            cur: null
           };
+          $("bigfx").hidden = true;
+          $("bigfx").innerHTML = "";
           buildMeters();
           METERS.forEach(function (m) { meterEls[m.k].shown = st.m[m.k]; renderMeter(m.k, false); });
           show("scr-play");
           startDay(1, false);
+        }
+
+        // 每天固定：主线开场 → 随机日常卡 → 主线收尾；第 5 天的收尾就是对决沈天衡
+        function buildDeck() {
+          var pool = shuffle(POOL), deck = [];
+          for (var d = 1; d <= DAYS; d++) {
+            var mine = MAIN.filter(function (s) { return s.day === d; });
+            deck.push(mine[0]);
+            for (var k = 0; k < PER_DAY - 2; k++) deck.push(pool.shift());
+            deck.push(mine[1]);
+          }
+          return deck;
+        }
+        // 按当前标记生成要显示的卡（只有对决卡会变）
+        function resolve(ev) {
+          if (!ev.build) return ev;
+          var b = ev.build(st.flags), out = {};
+          Object.keys(ev).forEach(function (k) { out[k] = ev[k]; });
+          out.t = b.t; out.c = b.c;
+          return out;
+        }
+
+        function wrongStamp() {
+          if (st.stats.wrong) return;
+          st.stats.wrong = true;
+          var box = $("bigfx");
+          box.innerHTML = '<span class="x-big__seal">这笔账不对！</span>';
+          box.hidden = false;
+          if (!reduce) setTimeout(function () {
+            var a = $("stage");
+            a.classList.remove("x-shake"); void a.offsetWidth; a.classList.add("x-shake");
+            setTimeout(function () { a.classList.remove("x-shake"); }, 500);
+          }, 180);
+          clearTimeout(wrongStamp._t);
+          wrongStamp._t = setTimeout(function () { box.hidden = true; box.innerHTML = ""; }, reduce ? 1700 : 1150);
         }
 
         function dayOf(i) { return Math.floor(i / PER_DAY) + 1; }
@@ -1652,20 +2066,26 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
           $("hud-left").innerHTML = "距离申报截止还有 <b>" + left + "</b> 天";
           $("ov-day").textContent = "第 " + day + " 天";
           $("ov-left").innerHTML = "距离申报截止还有 <b>" + left + "</b> 天";
-          $("ov-rest").textContent = rested ? "睡了一觉：🔋 精力 +10　🧠 理智 +5" : (day === DAYS ? "今天必须申报。" : "点任意处开始");
+          $("ov-rest").textContent = rested ? "睡了一觉：🔋 精力 +10　🧠 理智 +5" : (day === DAYS ? "今天必须申报。" : "");
           if (day === DAYS && rested) $("ov-rest").textContent += "。今天必须申报。";
+          $("ov-rest").hidden = !$("ov-rest").textContent;
+          var sc = STORY[day - 1] || STORY[STORY.length - 1];
+          $("ov-no").textContent = "第 " + day + " 章";
+          $("ov-title").textContent = "《" + sc.t + "》";
+          $("ov-text").textContent = sc.x;
           renderCard();
           var ov = $("overlay");
           ov.hidden = false;
-          clearTimeout(overlayTimer);
-          overlayTimer = setTimeout(hideOverlay, rested ? 2000 : 1600);
-          if (rested) {
-            setTimeout(function () { change({ e: 10, s: 5 }, true); }, 500);
-          }
+          ov.scrollTop = 0;
+          var cut = ov.querySelector(".x-cut");
+          cut.style.animation = "none"; void cut.offsetWidth; cut.style.animation = "";
+          overlayTimer = rested;
+          $("ov-go").focus({ preventScroll: true });
         }
         function hideOverlay() {
-          clearTimeout(overlayTimer);
+          if ($("overlay").hidden) return;
           $("overlay").hidden = true;
+          if (overlayTimer === true) { overlayTimer = null; change({ e: 10, s: 5 }, true); }
           var first = document.querySelector(".x-choice");
           if (first) first.focus({ preventScroll: true });
         }
@@ -1687,16 +2107,16 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
         }
 
         function renderCard() {
-          var ev = st.deck[st.i];
+          var ev = st.cur = resolve(st.deck[st.i]);
           renderProgress();
           var no = String(st.i + 1).padStart(3, "0");
           var html =
             '<article class="x-card' + (ev.boss ? " is-boss" : "") + '">' +
-            '<div class="x-card__meta"><span class="x-card__who">' + ev.w + "</span><span>凭证 第 " + no + " 号</span></div>" +
+            '<div class="x-card__meta"><span class="x-card__who">' + (ev.main ? '<span class="x-tag">主线 · 第 ' + ev.day + " 天" + ev.kind + "</span>" : "") + ev.w + "</span><span>凭证 第 " + no + " 号</span></div>" +
             '<p class="x-card__text">' + ev.t + "</p>" +
             '<div class="x-choices">' +
             ev.c.map(function (c, n) {
-              return '<button type="button" class="x-choice" data-n="' + n + '"><span>' + "ABC"[n] + "</span><span>" + c.l + "</span></button>";
+              return '<button type="button" class="x-choice" data-n="' + n + '"><span>' + "ABCD"[n] + "</span><span>" + c.l + "</span></button>";
             }).join("") +
             '</div><div class="x-slot"></div></article>';
           $("stage").innerHTML = html;
@@ -1706,20 +2126,34 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
         }
 
         function choose(n, btn) {
-          var ev = st.deck[st.i], c = ev.c[n], out;
+          var ev = st.cur, c = ev.c[n], out;
           if (c.fn) out = c.fn(st.m);
           else if (c.alt && Math.random() < c.alt.p) out = { d: c.alt.d, r: c.alt.r };
           else out = { d: c.d, r: c.r };
+          // 第 4 天改过自己的账：对决时沈天衡揭短，理智额外扣
+          if (ev.boss && st.flags.self) {
+            var d2 = {};
+            Object.keys(out.d).forEach(function (k) { d2[k] = out.d[k]; });
+            d2.s = (d2.s || 0) - SELF_HIT;
+            out = { d: d2, r: out.r + "沈天衡冷笑着揭短，你的理智额外 -" + SELF_HIT + "。" };
+          }
+          if (c.f.set) Object.keys(c.f.set).forEach(function (k) { st.flags[k] = c.f.set[k]; });
+          if (ev.main) st.log.push({ day: ev.day, kind: ev.kind, l: c.l, boss: ev.boss, ally: !!c.f.ally, self: !!c.f.self });
           Array.prototype.forEach.call(document.querySelectorAll(".x-choice"), function (b) { b.disabled = true; });
           btn.classList.add("is-picked");
 
           if (out.d.z > 0) st.stats.rec++;
           if (c.f.tea) st.stats.tea++;
           if (c.f.ot) st.stats.ot++;
+          if (c.f.rej) st.stats.rej++;
+          if (c.f.self) st.stats.self++;
+          if (ev.aud) { st.stats.audSeen++; if (c.f.aud) st.stats.audOk++; }
           change(out.d, true);
+          playFx(pickFx(out, c, ev), btn);
 
-          var fail = st.m.e <= 0 ? "sleep" : st.m.s <= 0 ? "laugh" : st.m.b <= 0 ? "talk" : null;
           var last = st.i === st.deck.length - 1;
+          var fail = last ? judge(st.m) : st.m.e <= 0 ? "sleep" : st.m.s <= 0 ? "laugh" : st.m.b <= 0 ? "talk" : null;
+          if (c.f.wrong || (ev.boss && ["deity", "keeper", "god"].indexOf(fail) >= 0)) wrongStamp();
           var chips = METERS.filter(function (m) { return out.d[m.k]; }).map(function (m) {
             var v = out.d[m.k];
             return '<li class="' + (v > 0 ? "is-up" : "is-down") + '">' + m.icon + " " + m.name + " " + (v > 0 ? "+" : "") + v + "</li>";
@@ -1728,12 +2162,21 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
           var slot = document.querySelector(".x-slot");
           slot.innerHTML =
             '<div class="x-result"><p class="x-note">' + out.r + "</p>" +
+            (ev.hook && !fail ? '<p class="x-lore">明日伏笔：' + ev.hook + "</p>" : "") +
             (chips ? '<ul class="x-deltas">' + chips + "</ul>" : "") +
             '<button type="button" class="x-btn" id="btn-next">' + label + "</button></div>";
           var next = $("btn-next");
           next.addEventListener("click", function () { advance(fail); });
           next.focus({ preventScroll: true });
           setTimeout(function () { next.scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" }); }, 60);
+        }
+
+        // 对决沈天衡：账平度 ≥ 70 且理智 ≥ 40（且没倒下）判胜
+        function judge(m) {
+          var win = m.z >= 70 && m.s >= 40 && m.e > 0 && m.b > 0;
+          if (win) return m.z >= 100 ? "deity" : m.s >= 60 ? "keeper" : "god";
+          if (m.s < 40 || m.b <= 20) return "erased";
+          return m.e <= 0 ? "sleep" : "next";
         }
 
         function advance(fail) {
@@ -1749,20 +2192,42 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
           window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
         }
 
+        // 结局引用一句关键选择：对决里的援军 > 第 4 天改自己的账 > 对决选项 > 最近一张主线卡
+        function keyQuote() {
+          var log = st.log, pick = null;
+          var find = function (fn) { for (var i = log.length - 1; i >= 0; i--) if (fn(log[i])) return log[i]; return null; };
+          pick = find(function (x) { return x.ally; }) || find(function (x) { return x.self; }) || find(function (x) { return x.boss; }) || log[log.length - 1];
+          if (!pick) return "";
+          var l = /^「.*」$/.test(pick.l) ? pick.l : "「" + pick.l.replace(/「/g, "『").replace(/」/g, "』") + "」";
+          return "关键一笔 · 第 " + pick.day + " 天" + pick.kind + "：你选了" + l;
+        }
+
         var lastShare = "";
         function end(key) {
           var e = ENDINGS[key], m = st.m, good = key === "god" || key === "gone";
+          var alive = ["god", "gone", "cent", "next", "deity", "keeper"].indexOf(key) >= 0;
+          var got = [e].concat(TITLES.filter(function (t) { return t.ok(m, st.stats, alive); }));
+          var main = got.slice().sort(function (a, b) { return b.r - a.r; })[0];
+          var rest = got.filter(function (t) { return t !== main; }).sort(function (a, b) {
+            return (b === e) - (a === e) || b.r - a.r;
+          }).slice(0, 3);
           $("stamp-top").textContent = e.top;
-          $("stamp-name").textContent = e.title;
+          $("stamp-name").textContent = main.title;
           $("stamp-bot").textContent = "第 " + dayOf(st.i) + " 天 · 财务专用章";
-          $("end-title").textContent = "「" + e.title + "」";
-          $("end-desc").textContent = e.desc;
+          $("end-title").textContent = "「" + main.title + "」";
+          $("end-desc").textContent = main.desc;
+          var kq = keyQuote();
+          $("end-quote").textContent = kq;
+          $("end-quote").hidden = !kq;
+          $("badges").innerHTML = rest.map(function (t) { return "<li>" + t.title + "</li>"; }).join("");
+          $("badgewrap").hidden = !rest.length;
           $("final").innerHTML = METERS.map(function (x) {
             return "<div><span>" + x.icon + " " + x.name + '</span><b class="' + (m[x.k] === 0 ? "is-zero" : "") + '">' + m[x.k] + "</b></div>";
           }).join("");
           var s = st.stats;
           $("statline").innerHTML = "你对了 <b>" + s.rec + "</b> 笔账 / 喝了 <b>" + s.tea + "</b> 杯奶茶 / 加了 <b>" + s.ot + "</b> 次班";
-          lastShare = "我在《月末结账生存战》获得称号【" + e.title + "】，账平度" + m.z + "，理智" + m.s + "。打工人，你的精神状态还好吗？";
+          lastShare = "林小满在《月末结账生存战》获得称号【" + main.title + "】" +
+            (rest.length ? "，顺手解锁" + rest.map(function (t) { return "【" + t.title + "】"; }).join("") : "") + "，账平度" + m.z + "，理智" + m.s + "。" + (kq ? kq + "。" : "") + "打工人，你的精神状态还好吗？";
           var stamp = $("stamp");
           stamp.style.animation = "none";
           void stamp.offsetWidth;
@@ -1808,7 +2273,7 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
         $("btn-start").addEventListener("click", newGame);
         $("btn-again").addEventListener("click", newGame);
         $("btn-copy").addEventListener("click", copyShare);
-        $("overlay").addEventListener("click", hideOverlay);
+        $("ov-go").addEventListener("click", hideOverlay);
         document.addEventListener("keydown", function (ev) {
           if (!$("overlay").hidden && (ev.key === "Enter" || ev.key === " " || ev.key === "Escape")) { ev.preventDefault(); hideOverlay(); }
         });
