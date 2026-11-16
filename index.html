@@ -2600,6 +2600,38 @@ tr.is-highlight > :last-child { box-shadow: 12px 0 var(--fill-tertiary); }
         });
       })();
     </script>
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+  <script>
+  (function () {
+    var tries = 0, MAX = 4;
+    function load() {
+      tries++;
+      var cb = "BusuanziCallback_" + Date.now() + "_" + tries, done = false;
+      var sc = document.createElement("script");
+      var timer = setTimeout(fail, 6000);
+      window[cb] = function (d) {
+        done = true; clearTimeout(timer);
+        try { delete window[cb]; } catch (e) { window[cb] = undefined; }
+        if (sc.parentNode) sc.parentNode.removeChild(sc);
+        if (d && d.site_uv != null) {
+          var v = document.getElementById("busuanzi_value_site_uv");
+          var c = document.getElementById("busuanzi_container_site_uv");
+          if (v) v.textContent = d.site_uv;
+          if (c) c.style.display = "block";
+        }
+      };
+      function fail() {
+        if (done) return; done = true; clearTimeout(timer);
+        if (sc.parentNode) sc.parentNode.removeChild(sc);
+        window[cb] = function () {};
+        if (tries < MAX) setTimeout(load, 1500 * tries);
+      }
+      sc.onerror = fail;
+      sc.referrerPolicy = "no-referrer-when-downgrade";
+      sc.src = "https://busuanzi.ibruce.info/busuanzi?jsonpCallback=" + cb;
+      document.body.appendChild(sc);
+    }
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", load); else load();
+  })();
+  </script>
   </body>
 </html>
